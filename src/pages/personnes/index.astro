@@ -1,0 +1,14 @@
+---
+import Layout from "../../layouts/Layout.astro"
+import { pb } from "../../utils/server";
+
+export const prerender = false;
+
+const personnes = await pb.collection('personne').getFullList()
+---
+
+<Layout pageTitle="Les personnes">
+    {personnes.map((p) => (
+        <a href={`/personnes/${p.id}`}>{p.nom}</a>
+    ))}
+</Layout>
