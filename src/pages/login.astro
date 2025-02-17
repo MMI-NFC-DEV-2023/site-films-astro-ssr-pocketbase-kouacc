@@ -1,0 +1,36 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { pb } from "../utils/server";
+
+export const prerender = false;
+
+if (Astro.request.method === "POST") {
+    try {
+        const data = await Astro.request.formData();
+        const email = data.get("email") as string;
+        const password = data.get("password") as string;
+
+        const response = await pb.collection('users').authWithPassword(email, password);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+---
+
+<Layout pageTitle="Connexion">
+    <main>
+        <h1 class="text-5xl font-semibold">Connexion</h1>
+        <form action="" method="post">
+            <label>
+                Adresse e-mail
+                <input type="email" name="email">
+            </label>
+            <label>
+                Mot de passe
+                <input type="password" name="password">
+            </label>
+            <input class="pointer bg-blue-500 rounded-lg px-3 py-1.5" type="submit" value="Se connecter">
+        </form>
+    </main>
+</Layout>
