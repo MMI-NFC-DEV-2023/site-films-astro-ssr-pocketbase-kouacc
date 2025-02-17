@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { pb } from "../utils/server";
 
 export const prerender = false;
+const locals = Astro.locals
 
 if (Astro.request.method === "POST") {
     try {
@@ -10,7 +10,7 @@ if (Astro.request.method === "POST") {
         const email = data.get("email") as string;
         const password = data.get("password") as string;
 
-        const response = await pb.collection('users').authWithPassword(email, password);
+        await locals.pb.collection('users').authWithPassword(email, password);
     } catch (e) {
         console.error(e);
     }
