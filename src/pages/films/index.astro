@@ -1,0 +1,35 @@
+---
+import { Debug } from "astro:components";
+import Layout from "../../layouts/Layout.astro";
+import type { FilmResponse, PersonneResponse, RoleResponse } from "../../pocketbase-types"
+
+type Response = FilmResponse<{
+    produit_par: PersonneResponse,
+    realise_par: PersonneResponse,
+    roles: RoleResponse<{
+        acteur: PersonneResponse
+    }>[]
+}>
+
+const films = await Astro.locals.pb.collection<Response>('film').getFullList({ expand: 'produit_par,realise_par,roles.acteur'});
+
+---
+
+<Layout pageTitle="Films">
+    <section class="grid gap-8 p-4">
+        {films.map(film => (
+            <article class="border p-4 rounded-lg shadow">
+                <h2 class="text-2xl font-bold mb-2">{film.titre}</h2>
+                <p class="mb-1">Produit par {film.expand?.produit_par.nom}</p>
+                <p class="mb-3">Réalisé par {film.expand?.realise_par.nom}</p>
+                <h3 class="text-xl font-semibold mb-2">Acteurs</h3>
+                <ul class="list-disc pl-5">
+                    {film.expand?.roles.map(role => (
+                        <li class="mb-1">{role.nom_role} joué par {role.expand?.acteur.nom}</li>
+                    ))}
+                </ul>
+            </article>
+        ))}
+    </section>
+    <Debug value={{ films }} />
+</Layout>
