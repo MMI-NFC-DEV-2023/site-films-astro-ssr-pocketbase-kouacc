@@ -2,6 +2,7 @@
 import { Debug } from "astro:components";
 import Layout from "../../layouts/Layout.astro";
 import type { FilmResponse, PersonneResponse, RoleResponse } from "../../pocketbase-types"
+import GithubSlugger from 'github-slugger'
 
 type Response = FilmResponse<{
     produit_par: PersonneResponse,
@@ -11,6 +12,8 @@ type Response = FilmResponse<{
     }>[]
 }>
 
+const slugger = new GithubSlugger()
+
 const films = await Astro.locals.pb.collection<Response>('film').getFullList({ expand: 'produit_par,realise_par,roles.acteur'});
 
 ---
@@ -18,6 +21,7 @@ const films = await Astro.locals.pb.collection<Response>('film').getFullList({ e
 <Layout pageTitle="Films">
     <section class="grid gap-8 p-4">
         {films.map(film => (
+            <a href={`/films/${film.id}-${slugger.slug(film.titre)}`}>
             <article class="border p-4 rounded-lg shadow">
                 <h2 class="text-2xl font-bold mb-2">{film.titre}</h2>
                 <p class="mb-1">Produit par {film.expand?.produit_par.nom}</p>
@@ -29,6 +33,7 @@ const films = await Astro.locals.pb.collection<Response>('film').getFullList({ e
                     ))}
                 </ul>
             </article>
+            </a>
         ))}
     </section>
     <Debug value={{ films }} />

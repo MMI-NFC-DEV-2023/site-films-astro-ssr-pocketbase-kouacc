@@ -1,0 +1,20 @@
+---
+import { pb } from '../../utils/server';
+import Layout from '../../layouts/Layout.astro';
+import { formatDate } from '../../utils/date';
+
+export async function getStaticPaths() {
+    const personnes = await pb.collection('personne').getFullList()
+    return personnes.map((p) => ({
+        params: { id: p.id },
+        props: { p }
+    }))
+}
+
+const { p } = Astro.props
+---
+
+<Layout pageTitle={p.nom}>
+    <h1 class="text-5xl font-semibold">{p.nom}</h1>
+    <p>{p.date_naissance}</p>
+</Layout>

@@ -1,0 +1,23 @@
+---
+import Layout from "../../layouts/Layout.astro"
+import type { FilmResponse, PersonneResponse, RoleResponse } from "../../pocketbase-types"
+import GithubSlugger from 'github-slugger'
+
+export const prerender = false
+
+const slugger = new GithubSlugger()
+
+type Response = FilmResponse<{
+    produit_par: PersonneResponse,
+    realise_par: PersonneResponse[],
+    roles: RoleResponse<{acteur: PersonneResponse}>[] 
+}>
+
+const id = Astro.params.id
+
+const film = await Astro.locals.pb.collection<Response>('film').getOne(id!, {expand: 'produit_par,realise_par,roles.acteur' });
+---
+
+<Layout pageTitle={film.titre}>
+    <h1 class="text-5xl">{film.titre}</h1>
+</Layout>
