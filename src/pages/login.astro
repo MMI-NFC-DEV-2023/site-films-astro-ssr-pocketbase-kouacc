@@ -15,7 +15,6 @@ if (Astro.request.method === "POST") {
         console.error(e);
     }
 }
-
 ---
 
 <Layout pageTitle="Connexion">
@@ -32,5 +31,23 @@ if (Astro.request.method === "POST") {
             </label>
             <input class="pointer bg-blue-500 rounded-lg px-3 py-1.5" type="submit" value="Se connecter">
         </form>
+        <button class="pointer bg-blue-500 rounded-lg px-3 py-1.5" id="login-gh">Se connecter avec Github</button>
+        {locals.pb.authStore.record ? <p>Connecté en tant que {locals.pb.authStore.record.email}</p> : null}
     </main>
 </Layout>
+
+<script>
+    import { pb } from "../utils/server";
+
+    const loginButton = document.getElementById('login-gh');
+    if (loginButton) {
+        loginButton.addEventListener('click', loginWithGithub);
+    }
+
+    async function loginWithGithub() {
+        await pb.collection('users').authWithOAuth2({provider: 'github'});
+        document.cookie = pb.authStore.exportToCookie({httpOnly: false});
+    }
+
+    
+</script>
